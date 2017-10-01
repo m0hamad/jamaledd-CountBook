@@ -61,7 +61,6 @@
             android:layout_marginLeft="50dp"
             android:layout_weight="1"
             android:background="@drawable/layout"
-            android:onClick="increment"
             android:text="+"
             android:textSize="24sp" />
 
@@ -104,6 +103,7 @@
             android:layout_weight="1"
             android:background="@drawable/layout"
             android:fontFamily="sans-serif"
+            android:onClick="done"
             android:text="Done"
             android:textSize="18sp" />
 

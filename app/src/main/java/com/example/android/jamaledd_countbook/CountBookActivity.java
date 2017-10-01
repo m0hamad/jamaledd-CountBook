@@ -31,7 +31,7 @@ import static android.R.id.edit;
 public class CountBookActivity extends AppCompatActivity {
 
     private static final String FILENAME = "file.sav";
-    private ArrayList<Count> countList = new ArrayList<>();
+    private ArrayList<Count> countList = new ArrayList<Count>();
     private ArrayAdapter<Count> adapter;
     private ListView countListView;
     private TextView countTracker;
@@ -73,7 +73,7 @@ public class CountBookActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        adapter = new ArrayAdapter<>(this,
+        adapter = new ArrayAdapter<Count>(this,
                 R.layout.count, countList);
         countListView.setAdapter(adapter);
         loadAllRecord();

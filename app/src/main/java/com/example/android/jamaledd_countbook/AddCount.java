@@ -3,7 +3,6 @@ package com.example.android.jamaledd_countbook;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,6 +13,7 @@ import android.widget.EditText;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.util.Calendar;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -25,6 +25,8 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import static android.R.attr.value;
+
 /**
  * Created by Moe on 2017-09-29.
  */
@@ -32,7 +34,7 @@ import java.util.ArrayList;
 public class AddCount extends AppCompatActivity implements View.OnClickListener{
 
     private static final String FILENAME = "file.sav";
-    private ArrayList<Count> countList = new ArrayList<>();
+    private ArrayList<Count> countList = new ArrayList<Count>();
     private int index = -1;
     private Count newCount;
     private EditText countName;
@@ -55,8 +57,18 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
         countValue = (EditText) findViewById(R.id.count_value);
         countComment = (EditText) findViewById(R.id.count_comment);
         resetToInitialValue = (Button) findViewById(R.id.reset_to_initial_value);
+
         done = (Button) findViewById(R.id.done);
         done.setOnClickListener(this);
+
+        increment = (Button) findViewById(R.id.increment);
+        increment.setOnClickListener(this);
+
+        decrement = (Button) findViewById(R.id.decrement);
+        decrement.setOnClickListener(this);
+
+        resetToInitialValue = (Button) findViewById(R.id.reset_to_initial_value);
+        resetToInitialValue.setOnClickListener(this);
 
         countDateEditText.setFocusable(false);
         countDateEditText.setOnClickListener(this);
@@ -111,16 +123,12 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
         }
     };
 
-    @Override
-    public void onClick(View view) {
-        if (view == done) {
-            addNewCount();
-        }
-    }
-    private void addNewCount() {
+    protected void addNewCount() {
+
+        Intent intent = new Intent(this, CountBookActivity.class);
 
         String name = countName.getText().toString();
-        Count count = new Count();
+        Count newCount = new Count();
 
         if (name.isEmpty()) {
             countName.setError("Enter name");
@@ -132,6 +140,10 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
             int value = Integer.parseInt(countValue.getText().toString());
             if (!checkCountValue(value, countValue)) return;
             newCount.setNewValue(value);
+        }
+
+        if (countValue.getText().toString().isEmpty()) {
+            countValue.setError("Enter number");
         }
 
         if (!countComment.getText().toString().isEmpty()) {
@@ -206,10 +218,30 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
         }
     }
 
-    private int getIndex(Count record) {
+    @Override
+    public void onClick(View view) {
+
+        int value = Integer.parseInt(countValue.getText().toString());
+
+        if (view == done) {
+            addNewCount();
+        }
+
+        if (view == increment) {
+            value++;
+            newCount.setNewValue(value);
+        }
+
+        if (view == decrement) {
+            value--;
+            newCount.setNewValue(value);
+        }
+    }
+
+    private int getIndex(Count count) {
         int index = 0;
         for (Count r : countList) {
-            if (r.getName().equals(record.getName())) {
+            if (r.getName().equals(count.getName())) {
                 break;
             }
             ++index;
