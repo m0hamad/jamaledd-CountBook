@@ -1,3 +1,9 @@
+/**
+ * AddCount
+ *
+ * October 2nd, 2017
+ */
+
 package com.example.android.jamaledd_countbook;
 
 import android.app.DatePickerDialog;
@@ -26,15 +32,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import static android.R.attr.value;
+import static com.example.android.jamaledd_countbook.R.id.decrement;
+import static com.example.android.jamaledd_countbook.R.id.increment;
+import static com.example.android.jamaledd_countbook.R.layout.count;
 
 /**
- * Created by Moe on 2017-09-29.
+ * Creates the count by inputting values.
+ * User must have a name, and can enter a value, date, and optional comment.
+ * User can add new count or edit a previous count.
  */
-
 public class AddCount extends AppCompatActivity implements View.OnClickListener{
 
     private static final String FILENAME = "file.sav";
-    private ArrayList<Count> countList = new ArrayList<Count>();
+    private ArrayList<Count> countList = new ArrayList<>();
     private int index = -1;
     private Count newCount;
     private EditText countName;
@@ -47,6 +57,13 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
     private Button increment;
     private Button decrement;
 
+    /**
+     * @param savedInstanceState
+     *
+     * Opens a new count
+     * or
+     * Opens an existing count and loads previous inputs
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +73,6 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
         countDateEditText = (EditText) findViewById(R.id.count_date);
         countValue = (EditText) findViewById(R.id.count_value);
         countComment = (EditText) findViewById(R.id.count_comment);
-        resetToInitialValue = (Button) findViewById(R.id.reset_to_initial_value);
 
         done = (Button) findViewById(R.id.done);
         done.setOnClickListener(this);
@@ -74,7 +90,6 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
         countDateEditText.setOnClickListener(this);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd");
 
-        //This is where the widget DatePicker is implemented and where it gets the date
         countDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,7 +101,7 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
             }
         });
 
-        loadAllRecord();
+        loadCounts();
 
         Gson gson = new Gson();
         Intent intent = getIntent();
@@ -101,7 +116,7 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
             if (newCount.getDate() != null) {
                 countDateEditText.setText(sdf.format(countDate.getTime()));
             }
-            if (newCount.getNewValue() != 0) {
+            if (newCount.getNewValue() != -1) {
                 countValue.setText(Integer.toString(newCount.getNewValue()));
             }
             if (newCount.getComment() != null) {
@@ -111,24 +126,66 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
     }
 
     /**
+     * @param view
+     *
+     * Saves new count or existing count.
+     */
+    @Override
+    public void onClick(View view) {
+
+        int value = Integer.parseInt(countValue.getText().toString());
+
+        if (view == done) {
+            addNewCount();
+        }
+        if (view == resetToInitialValue) {
+            countValue.setText(Integer.toString(newCount.getInitialValue()));
+        }
+        if (view == increment) {
+            value++;
+            countValue.setText(Integer.toString(value));
+        }
+        if (view == decrement) {
+            value--;
+            countValue.setText(Integer.toString(value));
+        }
+    }
+
+    /**
      * https://stackoverflow.com/questions/15027454/how-to-get-onclick-in-datepickerdialog-ondatesetlistener
+     *
      */
     DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+
+        /**
+         *
+         * @param view
+         * @param year
+         * @param month
+         * @param day
+         *
+         * Implements the date widget when user is selecting date.
+         */
         @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        public void onDateSet(DatePicker view, int year, int month, int day) {
             countDate.set(Calendar.YEAR, year);
-            countDate.set(Calendar.MONTH, monthOfYear);
-            countDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            countDateEditText.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
+            countDate.set(Calendar.MONTH, month);
+            countDate.set(Calendar.DAY_OF_MONTH, day);
+            countDateEditText.setText(year + "-" + (month + 1) + "-" + day);
         }
     };
 
+    /**
+     * Allows user to enter inputs for count.
+     * Inputs are then saved and stored.
+     */
     protected void addNewCount() {
-
-        Intent intent = new Intent(this, CountBookActivity.class);
 
         String name = countName.getText().toString();
         Count newCount = new Count();
+
+        //https://stackoverflow.com/questions/6835980/android-converting-string-to-int
+        int value = Integer.parseInt(countValue.getText().toString());
 
         if (name.isEmpty()) {
             countName.setError("Enter name");
@@ -137,13 +194,9 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
 
         if (!countValue.getText().toString().isEmpty()) {
 
-            int value = Integer.parseInt(countValue.getText().toString());
             if (!checkCountValue(value, countValue)) return;
             newCount.setNewValue(value);
-        }
-
-        if (countValue.getText().toString().isEmpty()) {
-            countValue.setError("Enter number");
+            newCount.setInitialValue(value);
         }
 
         if (!countComment.getText().toString().isEmpty()) {
@@ -170,9 +223,16 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
         }
     }
 
-    private Boolean checkCountValue(int checkNumber, EditText editText) {
-        if (checkNumber > 0 ){
-            editText.setText(Double.toString(checkNumber));
+    /**
+     * @param checkValue
+     * @param editText
+     * @return
+     *
+     * Checks for negative integer value.
+     */
+    private Boolean checkCountValue(int checkValue, EditText editText) {
+        if (checkValue >= 0 ){
+            editText.setText(Integer.toString(checkValue));
             return true;
         }
         editText.setError("Needs pos+ value");
@@ -199,14 +259,15 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
         }
     }
 
-    private void loadAllRecord() {
+    /**
+     * Loads information for count.
+     */
+    private void loadCounts() {
         try {
             FileInputStream fis = openFileInput(FILENAME);
             BufferedReader in = new BufferedReader(new InputStreamReader(fis));
 
             Gson gson = new Gson();
-            // Taken from http://stackoverflow.com/questions/12384064/gson-convert-from-json-to-a-typed-arraylistt
-            // 2017-01-26
 
             countList = gson.fromJson(in, new TypeToken<ArrayList<Count>>(){}.getType());
             fis.close();
@@ -218,26 +279,12 @@ public class AddCount extends AppCompatActivity implements View.OnClickListener{
         }
     }
 
-    @Override
-    public void onClick(View view) {
-
-        int value = Integer.parseInt(countValue.getText().toString());
-
-        if (view == done) {
-            addNewCount();
-        }
-
-        if (view == increment) {
-            value++;
-            newCount.setNewValue(value);
-        }
-
-        if (view == decrement) {
-            value--;
-            newCount.setNewValue(value);
-        }
-    }
-
+    /**
+     * @param count
+     * @return
+     *
+     * Gets index for count.
+     */
     private int getIndex(Count count) {
         int index = 0;
         for (Count r : countList) {

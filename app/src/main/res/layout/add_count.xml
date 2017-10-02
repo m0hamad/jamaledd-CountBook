@@ -89,6 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="64dp"
+            android:onClick="resetToInitialValue"
             android:layout_weight="1"
             android:background="@drawable/layout"
             android:fontFamily="sans-serif"

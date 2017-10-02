@@ -7,8 +7,8 @@
     android:gravity="center"
     android:padding="8dp"
     android:textSize="22sp"
-    android:layout_marginLeft="2dp"
-    android:layout_marginRight="2dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
     android:background="@drawable/layout3"
     android:fontFamily="sans-serif">
 

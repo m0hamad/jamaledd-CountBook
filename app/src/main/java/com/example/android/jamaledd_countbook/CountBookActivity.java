@@ -1,3 +1,9 @@
+/**
+ * CountBookActivity
+ *
+ * October 2nd, 2017
+ */
+
 package com.example.android.jamaledd_countbook;
 
 import android.content.Context;
@@ -26,16 +32,28 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-import static android.R.id.edit;
-
+/**
+ * Takes care of any activity on the main screen.
+ * Allows you to add, delete or open to edit a count.
+ * Displays the list of counts stored on the device.
+ *
+ * @see AddCount
+ * @see Count
+ */
 public class CountBookActivity extends AppCompatActivity {
 
     private static final String FILENAME = "file.sav";
-    private ArrayList<Count> countList = new ArrayList<Count>();
+    private ArrayList<Count> countList = new ArrayList<>();
     private ArrayAdapter<Count> adapter;
     private ListView countListView;
     private TextView countTracker;
 
+    /**
+     * @param savedInstanceState
+     *
+     * Displays what was in the list view prior to closing the app.
+     * Displays an empty list view if app has nothing saved.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,13 +88,16 @@ public class CountBookActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Load counts when app is open
+     */
     @Override
     protected void onStart() {
         super.onStart();
-        adapter = new ArrayAdapter<Count>(this,
+        adapter = new ArrayAdapter<>(this,
                 R.layout.count, countList);
         countListView.setAdapter(adapter);
-        loadAllRecord();
+        loadFromFile();
         countTracker.setText(String.format("Counts Listed: %s", countList.size()));
     }
 
@@ -84,11 +105,16 @@ public class CountBookActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         countList.clear();
-        loadAllRecord();
+        loadFromFile();
 
         adapter.notifyDataSetChanged();
     }
 
+    /**
+     * @param position
+     *
+     * Allows user to delete or edit the the count.
+     */
     private void viewCount(final int position) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(CountBookActivity.this);
@@ -121,7 +147,7 @@ public class CountBookActivity extends AppCompatActivity {
 
     }
 
-    private void loadAllRecord() {
+    private void loadFromFile() {
         try {
             FileInputStream fis = openFileInput(FILENAME);
             BufferedReader in = new BufferedReader(new InputStreamReader(fis));
@@ -140,7 +166,9 @@ public class CountBookActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * Save the changes and store them.
+     */
     private void saveInFile() {
         try {
             FileOutputStream fos = openFileOutput(FILENAME,

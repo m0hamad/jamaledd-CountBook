@@ -1,9 +1,14 @@
+/**
+ * CountException
+ *
+ * October 2nd, 2017
+ */
+
 package com.example.android.jamaledd_countbook;
 
 /**
- * Created by Moe on 2017-09-29.
+ * Exception is called when
  */
-
 public class CountException extends Exception{
 
 }

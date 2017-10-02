@@ -1,19 +1,32 @@
+/**
+ * Count
+ *
+ * October 2nd, 2017
+ */
+
 package com.example.android.jamaledd_countbook;
 
 import java.util.Calendar;
 
+/**
+ * Represents a count.
+ *
+ * @see CountBookActivity
+ * @see AddCount
+ */
 public class Count {
 
     private String name;
     private Calendar date;
     private int newValue;
-    //private int initialValue;
+    private int initialValue;
     private String comment;
 
     public Count() {
 
     }
 
+    //Getters
     public String getName() {
         if (name == null) return null;
         if (name.isEmpty()) return null;
@@ -27,13 +40,14 @@ public class Count {
 
     public int getNewValue() { return newValue; }
 
-    //public int getInitialValue() { return initialValue; }
+    public final int getInitialValue() { return initialValue; }
 
     public String getComment() {
         if (comment == null) return null;
         return comment;
     }
 
+    // Setters
     public void setName(String name) throws CountException {
         if (name.isEmpty()) {
             throw new CountException();
@@ -42,11 +56,12 @@ public class Count {
         this.name = name;
     }
 
+
     public void setDate(Calendar date) { this.date = date; }
 
     public void setNewValue(int newValue) { this.newValue = newValue; }
 
-    //public void setInitialValue(int initialValue) { this.initialValue = initialValue;}
+    public final void setInitialValue(int initialValue) { this.initialValue = initialValue;}
 
     public void setComment(String comment) {
         this.comment = comment;
@@ -54,7 +69,7 @@ public class Count {
 
     @Override
     public String toString() {
-        return this.name;
+        return (this.name + "\nValue: " + this.newValue);
     }
 
 }
